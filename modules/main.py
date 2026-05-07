@@ -72,13 +72,13 @@ PWAPI2 = "https://anonymouspwplayerr-3cfbfedeb317.herokuapp.com/pw"
 
 # ── Random image list (add/remove URLs freely) ────────────────────────────────
 image_list = [
-    "https://graph.org/file/9427b9e9e643d29bcaf33-aa5c8b67c163a9c4a2.jpg",
-    "https://graph.org/file/77656b3519aae1826dd7a-16b8aafc835d99d6f1.jpg",
-    "https://graph.org/file/5e0485a8e5db299de606b-3156b543bd2a963740.jpg",
-    "https://graph.org/file/17bb023117043bb942185-96bf90a807fef3e18d.jpg",
-    "https://graph.org/file/065fa6a3871e2de715e3a-f774a3a3bad574c214.jpg",
-    "https://graph.org/file/7da497bca809e08f89898-bf746d8ce14d321a4f.jpg",
-    "https://graph.org/file/c2f371599c84453293f1a-f1fb1a7bdb872a6e1a.jpg",
+    "https://graph.org/file/417cc7326cab9036c0152-f6a281db2a6975dfa9.jpg",
+    "https://graph.org/file/033121ad32291bcaddd01-d91ae4a1f7ca9378fc.jpg",
+    "https://graph.org/file/45f48779e0aa39709d1e8-4c024567d60f6ec5c2.jpg",
+    "https://graph.org/file/6ccdd92af77784c9d367e-a4ba6f10456656bbbd.jpg",
+    "https://graph.org/file/b23084c3e9124e14e18ec-d385f8f9c8b1635a2e.jpg",
+    "https://graph.org/file/29c4511ee7a4653d22fe1-67906a2a8392895644.jpg",
+    "https://graph.org/file/b45300f1cd068ad8f1895-fa23a3a1ad25789597.jpg",
 ]
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -250,7 +250,7 @@ async def broadcast_handler(client: Client, msg: Message):
 
 
 # ── /Mahi command ──────────────────────────────────────────────────────────────
-@bot.on_message(filters.command(["Sobi"]))
+@bot.on_message(filters.command(["cinderella"]))
 async def txt_handler(bot: Client, m: Message):
     editable = await m.reply_text(f"**🔹Hi I am Poweful Lovely TXT Downloader📥 Bot.**\n🔹**Send me the TXT file and Just wait and Watch😚.**")
     input: Message = await bot.listen(editable.chat.id)
@@ -268,7 +268,7 @@ async def txt_handler(bot: Client, m: Message):
             links.append(i.split("://", 1))
         os.remove(x)
     except:
-        await m.reply_text("Hii saitan .🌚🤣")
+        await m.reply_text("Hatt Bhabhi ko Bol dungi😏😳.")
         os.remove(x)
         return
    
