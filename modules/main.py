@@ -610,7 +610,7 @@ async def ali_handler(bot: Client, m: Message):
                 
                 headers = {
                     'host': 'api.classplusapp.com',
-                    'x-access-token': f'{cp_token}',    
+                    'x-access-token': f'{eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJpZCI6MTUwOTQyNzUzLCJvcmdJZCI6OTA0NTU3LCJ0eXBlIjoxLCJtb2JpbGUiOiI5MTkyNTc5NDk4NDQiLCJuYW1lIjoiU3VuaWwgQ2hvdWRoYXJ5IiwiZW1haWwiOiJzdW5pbGNob3VkaGFyeTA4OTI1N0BnbWFpbC5jb20iLCJpc0ludGVybmF0aW9uYWwiOjAsImRlZmF1bHRMYW5ndWFnZSI6IkVOIiwiY291bnRyeUNvZGUiOiJJTiIsImNvdW50cnlJU08iOiI5MSIsInRpbWV6b25lIjoiR01UKzU6MzAiLCJpc0RpeSI6dHJ1ZSwib3JnQ29kZSI6Im1zemNwcCIsImlzRGl5U3ViYWRtaW4iOjAsImZpbmdlcnByaW50SWQiOiI1MzdmZDYyMzI1NjgzNDMyNDE5MDkwNjNlYjgyZGFjNTVjMjVmMjQ1YzhmZTEyNzE2MGVhZTEwNDYyZTU1NmU0IiwiaWF0IjoxNzc4MTU3MTEwLCJleHAiOjE3Nzg3NjE5MTB9.U3qi-7X1vK2SqV_cpb1nb7pz-sIcWDM4RMs71tPn8V4MXL9qzFcOMBeE3_3yBmjz}',    
                     'accept-language': 'EN',
                     'api-version': '18',
                     'app-version': '1.4.73.2',
