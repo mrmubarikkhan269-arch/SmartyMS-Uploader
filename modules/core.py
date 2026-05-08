@@ -230,11 +230,20 @@ async def download_video(url, cmd, name):
     """
     global failed_counter
 
-    download_cmd = (
-        f'{cmd} -R 25 --fragment-retries 25 '
-        f'--external-downloader aria2c '
-        f'--downloader-args "aria2c: -x 16 -j 32"'
+    # PW proxy / HLS / MPD URLs ke liye aria2c use nahi karna —
+    # aria2c HLS/MPD segments properly handle nahi karta aur 403/fail deta hai.
+    _no_aria2c = (
+        "anonymouspwplayerr", "herokuapp", "sec1.pw.live",
+        "d1d34p8vz63oiq", ".m3u8", ".mpd",
     )
+    if any(kw in url for kw in _no_aria2c):
+        download_cmd = f"{cmd} -R 25 --fragment-retries 25"
+    else:
+        download_cmd = (
+            f"{cmd} -R 25 --fragment-retries 25 "
+            f"--external-downloader aria2c "
+            f'--downloader-args "aria2c: -x 16 -j 32"'
+        )
     print(download_cmd)
     logging.info(download_cmd)
 
