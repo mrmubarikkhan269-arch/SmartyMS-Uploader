@@ -20,6 +20,13 @@ from subprocess import getstatusoutput
 from pytube import YouTube
 from aiohttp import web
 
+# ── Health check & self-pinger (24/7 alive without UptimeRobot) ───────────────
+import sys, pathlib
+sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))  # root folder
+from modules.health import start_health_server
+from self_ping import self_ping_loop
+# ─────────────────────────────────────────────────────────────────────────────
+
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from pyrogram.errors import FloodWait
@@ -57,7 +64,7 @@ keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(text="👑 Owner", url="https://t.me/MR_Toxic_1"),
         ],
         [
-            InlineKeyboardButton(text="🔎 Developer Bro", url="https://t.me/SmartBoy_ApnaMS"),
+            InlineKeyboardButton(text="🔎 Developer", url="https://t.me/SmartBoy_ApnaMS"),
         ],
     ]
 )
@@ -72,15 +79,15 @@ PWAPI2 = "https://anonymouspwplayerr-3cfbfedeb317.herokuapp.com/pw"
 
 # ── Random image list (add/remove URLs freely) ────────────────────────────────
 image_list = [
-    "https://graph.org/file/9427b9e9e643d29bcaf33-aa5c8b67c163a9c4a2.jpg",
-    "https://graph.org/file/77656b3519aae1826dd7a-16b8aafc835d99d6f1.jpg",
-    "https://graph.org/file/5e0485a8e5db299de606b-3156b543bd2a963740.jpg",
-    "https://graph.org/file/17bb023117043bb942185-96bf90a807fef3e18d.jpg",
-    "https://graph.org/file/065fa6a3871e2de715e3a-f774a3a3bad574c214.jpg",
-    "https://graph.org/file/7da497bca809e08f89898-bf746d8ce14d321a4f.jpg",
-    "https://graph.org/file/c2f371599c84453293f1a-f1fb1a7bdb872a6e1a.jpg",
+    "https://graph.org/file/417cc7326cab9036c0152-f6a281db2a6975dfa9.jpg",
+    "https://graph.org/file/033121ad32291bcaddd01-d91ae4a1f7ca9378fc.jpg",
+    "https://graph.org/file/45f48779e0aa39709d1e8-4c024567d60f6ec5c2.jpg",
+    "https://graph.org/file/6ccdd92af77784c9d367e-a4ba6f10456656bbbd.jpg",
+    "https://graph.org/file/b23084c3e9124e14e18ec-d385f8f9c8b1635a2e.jpg",
+    "https://graph.org/file/29c4511ee7a4653d22fe1-67906a2a8392895644.jpg",
+    "https://graph.org/file/b45300f1cd068ad8f1895-fa23a3a1ad25789597.jpg",
 ]
-# ─────────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 cookies_file_path = os.getenv("COOKIES_FILE_PATH", "/modules/youtube_cookies.txt")
 
@@ -106,6 +113,12 @@ async def main():
         site = web.TCPSite(app_runner, "0.0.0.0", PORT)
         await site.start()
         print(f"Web server started on port {PORT}")
+
+    # ── 24/7 Health Check Server (HTTP/HTTPS ping support) ────────────────────
+    # Bina UptimeRobot ke bot alive rehta hai
+    asyncio.create_task(start_health_server())   # /health aur / route serve karta hai
+    asyncio.create_task(self_ping_loop())         # har 4 min me khud ko ping karta hai
+    # ─────────────────────────────────────────────────────────────────────────
 
     await bot.start()
     print("Bot is up and running")
@@ -250,7 +263,7 @@ async def broadcast_handler(client: Client, msg: Message):
 
 
 # ── /Mahi command ──────────────────────────────────────────────────────────────
-@bot.on_message(filters.command(["Sobi"]))
+@bot.on_message(filters.command(["cinderella"]))
 async def txt_handler(bot: Client, m: Message):
     editable = await m.reply_text(f"**🔹Hi I am Poweful Lovely TXT Downloader📥 Bot.**\n🔹**Send me the TXT file and Just wait and Watch😚.**")
     input: Message = await bot.listen(editable.chat.id)
@@ -268,7 +281,7 @@ async def txt_handler(bot: Client, m: Message):
             links.append(i.split("://", 1))
         os.remove(x)
     except:
-        await m.reply_text("Hii saitan .🌚🤣")
+        await m.reply_text("Hatt Bhabhi ko Bol dungi😏😳.")
         os.remove(x)
         return
    
@@ -346,12 +359,6 @@ async def txt_handler(bot: Client, m: Message):
     try:
         for i in range(arg-1, len(links)):
 
-
-            # Skip lines with no valid URL (e.g. 'None' or missing '://')
-            if len(links[i]) < 2 or not links[i][1].strip() or links[i][1].strip().lower() == 'none':
-                count += 1
-                continue
-
             Vxy = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
             url = "https://" + Vxy
             if "visionias" in url:
@@ -370,32 +377,8 @@ async def txt_handler(bot: Client, m: Message):
                         text = await resp.text()
                         url = re.search(r"(https://.*?playlist.m3u8.*?)\"", text).group(1)
 
-            elif 'classplusapp' in url or "testbook.com" in url or "classplusapp.com/drm" in url or "media-cdn.classplusapp.com/drm" in url:
-                url, contentId = url.split('&', 1)
-                
-                headers = {
-                    'host': 'api.classplusapp.com',
-                    'x-access-token': f'{raw_text4}',    
-                    'accept-language': 'EN',
-                    'api-version': '18',
-                    'app-version': '1.4.73.2',
-                    'build-number': '35',
-                    'connection': 'Keep-Alive',
-                    'content-type': 'application/json',
-                    'device-details': 'Xiaomi_Redmi 7_SDK-32',
-                    'device-id': 'c28d3cb16bbdac01',
-                    'region': 'IN',
-                    'user-agent': 'Mobile-Android',
-                    'webengage-luid': '00000187-6fe4-5d41-a530-26186858be4c',
-                    'accept-encoding': 'gzip'
-                }
-                
-                params = {
-                    'contentId': contentId,
-                    'offlineDownload': "false"
-                }
-
-                url = requests.get("https://api.classplusapp.com/cams/uploader/video/jw-signed-url", params=params, headers=headers).json().get("url")
+            elif 'videos.classplusapp' in url or "tencdn.classplusapp" in url or "webvideos.classplusapp.com" in url or "media-cdn-alisg.classplusapp.com" in url or "videos.classplusapp" in url or "videos.classplusapp.com" in url or "media-cdn-a.classplusapp" in url or "media-cdn.classplusapp" in url:
+             url = requests.get(f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}', headers={'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9r'}).json()['url']
 
             
             #elif '/master.mpd' in url:
@@ -564,13 +547,6 @@ async def ali_handler(bot: Client, m: Message):
     else:
         CR = raw_text3
         
-    await editable.edit("**Enter Your ClassPlus Token or send '/Mahi' for use default.🌚**")
-    input4: Message = await bot.listen(editable.chat.id)
-    raw_text4 = input4.text
-    await input4.delete(True)
-    if raw_text4 == '/Mahi':
-        raw_text4 = token
-
     await editable.edit("Now send the **Thumb url**\n**Eg Who's End With .jpg:** ``\n\nor Send `no`")
     input6 = message = await bot.listen(editable.chat.id)
     raw_text6 = input6.text
@@ -587,12 +563,6 @@ async def ali_handler(bot: Client, m: Message):
     count = int(raw_text)    
     try:
         for i in range(arg-1, len(links)):
-
-
-            # Skip lines with no valid URL (e.g. 'None' or missing '://')
-            if len(links[i]) < 2 or not links[i][1].strip() or links[i][1].strip().lower() == 'none':
-                count += 1
-                continue
 
             Vxy = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
             url = "https://" + Vxy
@@ -612,32 +582,8 @@ async def ali_handler(bot: Client, m: Message):
                         text = await resp.text()
                         url = re.search(r"(https://.*?playlist.m3u8.*?)\"", text).group(1)
 
-            elif 'classplusapp' in url or "testbook.com" in url or "classplusapp.com/drm" in url or "media-cdn.classplusapp.com/drm" in url:
-                url, contentId = url.split('&', 1)
-                
-                headers = {
-                    'host': 'api.classplusapp.com',
-                    'x-access-token': f'{raw_text4}',    
-                    'accept-language': 'EN',
-                    'api-version': '18',
-                    'app-version': '1.4.73.2',
-                    'build-number': '35',
-                    'connection': 'Keep-Alive',
-                    'content-type': 'application/json',
-                    'device-details': 'Xiaomi_Redmi 7_SDK-32',
-                    'device-id': 'c28d3cb16bbdac01',
-                    'region': 'IN',
-                    'user-agent': 'Mobile-Android',
-                    'webengage-luid': '00000187-6fe4-5d41-a530-26186858be4c',
-                    'accept-encoding': 'gzip'
-                }
-                
-                params = {
-                    'contentId': contentId,
-                    'offlineDownload': "false"
-                }
-
-                url = requests.get("https://api.classplusapp.com/cams/uploader/video/jw-signed-url", params=params, headers=headers).json().get("url")
+            elif 'videos.classplusapp' in url or "tencdn.classplusapp" in url or "webvideos.classplusapp.com" in url or "media-cdn-alisg.classplusapp.com" in url or "videos.classplusapp" in url or "videos.classplusapp.com" in url or "media-cdn-a.classplusapp" in url or "media-cdn.classplusapp" in url:
+             url = requests.get(f'https://api.classplusapp.com/cams/uploader/video/jw-signed-url?url={url}', headers={'x-access-token': 'eyJjb3Vyc2VJZCI6IjQ1NjY4NyIsInR1dG9ySWQiOm51bGwsIm9yZ0lkIjo0ODA2MTksImNhdGVnb3J5SWQiOm51bGx9r'}).json()['url']
 
             elif "apps-s3-jw-prod.utkarshapp.com" in url:
                 if 'enc_plain_mp4' in url:
