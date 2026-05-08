@@ -14,6 +14,7 @@ import m3u8
 import core as helper
 from utils import progress_bar
 from timer_utils import BatchTimer, fmt_time
+from live_timer import live_download_timer
 from vars import API_ID, API_HASH, BOT_TOKEN, OWNER
 from aiohttp import ClientSession
 from pyromod import listen
@@ -462,8 +463,18 @@ async def txt_handler(bot: Client, m: Message):
                 else:
                     Show = f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n📝 Title:- `{name}\n\n📹 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`\n\n**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786 ❖"
                     prog = await m.reply_text(Show)
+                    # ── Live countdown timer shuru (downloading ke dauran) ─────
+                    _stop_cin = asyncio.Event()
+                    _live_task_cin = asyncio.create_task(
+                        live_download_timer(prog, Show, _stop_cin)
+                    )
+                    # ─────────────────────────────────────────────────────────
                     res_file = await helper.download_video(url, cmd, name)
                     filename = res_file
+                    # ── Download complete — timer band karo ───────────────────
+                    _stop_cin.set()
+                    await _live_task_cin
+                    # ─────────────────────────────────────────────────────────
                     await prog.delete(True)
                     # ── Video timing — caption me add karo ───────────────────
                     _item_t, _eta_t, _total_t = _bt_cin.finish_item()
@@ -698,8 +709,18 @@ async def ali_handler(bot: Client, m: Message):
                 else:
                     Show = f"✰🖥️𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀»\n\n📝 Title:- `{name}\n\n🖥️ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`\n\n**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786✰"
                     prog = await m.reply_text(Show)
+                    # ── Live countdown timer shuru (downloading ke dauran) ─────
+                    _stop_boy = asyncio.Event()
+                    _live_task_boy = asyncio.create_task(
+                        live_download_timer(prog, Show, _stop_boy)
+                    )
+                    # ─────────────────────────────────────────────────────────
                     res_file = await helper.download_video(url, cmd, name)
                     filename = res_file
+                    # ── Download complete — timer band karo ───────────────────
+                    _stop_boy.set()
+                    await _live_task_boy
+                    # ─────────────────────────────────────────────────────────
                     await prog.delete(True)
                     # ── Video timing — caption me add karo ───────────────────
                     _item_t, _eta_t, _total_t = _bt_boy.finish_item()
