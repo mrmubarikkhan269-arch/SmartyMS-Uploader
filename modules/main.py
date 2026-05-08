@@ -13,19 +13,13 @@ import cloudscraper
 import m3u8
 import core as helper
 from utils import progress_bar
+from timer_utils import BatchTimer, fmt_time
 from vars import API_ID, API_HASH, BOT_TOKEN, OWNER
 from aiohttp import ClientSession
 from pyromod import listen
 from subprocess import getstatusoutput
 from pytube import YouTube
 from aiohttp import web
-
-# ── Health check & self-pinger (24/7 alive without UptimeRobot) ───────────────
-import sys, pathlib
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))  # root folder
-from modules.health import start_health_server
-from self_ping import self_ping_loop
-# ─────────────────────────────────────────────────────────────────────────────
 
 from pyrogram import Client, filters
 from pyrogram.types import Message
@@ -113,12 +107,6 @@ async def main():
         site = web.TCPSite(app_runner, "0.0.0.0", PORT)
         await site.start()
         print(f"Web server started on port {PORT}")
-
-    # ── 24/7 Health Check Server (HTTP/HTTPS ping support) ────────────────────
-    # Bina UptimeRobot ke bot alive rehta hai
-    asyncio.create_task(start_health_server())   # /health aur / route serve karta hai
-    asyncio.create_task(self_ping_loop())         # har 4 min me khud ko ping karta hai
-    # ─────────────────────────────────────────────────────────────────────────
 
     await bot.start()
     print("Bot is up and running")
@@ -355,9 +343,17 @@ async def txt_handler(bot: Client, m: Message):
     else:
         thumb == "no"
 
-    count = int(raw_text)    
+    count = int(raw_text)
+    # ── Batch timer shuru karo (cinderella) ───────────────────────────────────
+    _total_links_cin = len(links) - (arg - 1)
+    _bt_cin = BatchTimer(total_links=max(_total_links_cin, 1))
+    # ─────────────────────────────────────────────────────────────────────────
     try:
         for i in range(arg-1, len(links)):
+
+            # ── Is file ka timer shuru ────────────────────────────────────────
+            _bt_cin.start_item()
+            # ─────────────────────────────────────────────────────────────────
 
             Vxy = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
             url = "https://" + Vxy
@@ -423,7 +419,11 @@ async def txt_handler(bot: Client, m: Message):
                 if "drive" in url:
                     try:
                         ka = await helper.download(url, name)
-                        copy = await bot.send_document(chat_id=m.chat.id,document=ka, caption=cc1)
+                        # ── Drive file timing ─────────────────────────────────
+                        _item_t, _eta_t, _total_t = _bt_cin.finish_item()
+                        _tc = f"\n\n⏱️ **Time Taken:** `{_item_t}`\n🕐 **ETA (Remaining):** `{_eta_t}`\n⏳ **Total Elapsed:** `{_total_t}`"
+                        copy = await bot.send_document(chat_id=m.chat.id, document=ka, caption=cc1 + _tc)
+                        # ─────────────────────────────────────────────────────
                         count+=1
                         os.remove(ka)
                         time.sleep(1)
@@ -444,7 +444,11 @@ async def txt_handler(bot: Client, m: Message):
                                 file.write(response.content)
 
                             await asyncio.sleep(4)
-                            copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
+                            # ── PDF timing ────────────────────────────────────
+                            _item_t, _eta_t, _total_t = _bt_cin.finish_item()
+                            _tc = f"\n\n⏱️ **Time Taken:** `{_item_t}`\n🕐 **ETA (Remaining):** `{_eta_t}`\n⏳ **Total Elapsed:** `{_total_t}`"
+                            copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1 + _tc)
+                            # ─────────────────────────────────────────────────
                             count += 1
                             os.remove(f'{name}.pdf')
                         else:
@@ -461,7 +465,11 @@ async def txt_handler(bot: Client, m: Message):
                     res_file = await helper.download_video(url, cmd, name)
                     filename = res_file
                     await prog.delete(True)
-                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    # ── Video timing — caption me add karo ───────────────────
+                    _item_t, _eta_t, _total_t = _bt_cin.finish_item()
+                    _tc = f"\n\n⏱️ **Time Taken:** `{_item_t}`\n🕐 **ETA (Remaining):** `{_eta_t}`\n⏳ **Total Elapsed:** `{_total_t}`"
+                    await helper.send_vid(bot, m, cc + _tc, filename, thumb, name, prog)
+                    # ─────────────────────────────────────────────────────────
                     count += 1
                     time.sleep(1)
 
@@ -473,7 +481,13 @@ async def txt_handler(bot: Client, m: Message):
 
     except Exception as e:
         await m.reply_text(e)
-    await m.reply_text("𝐀𝐋𝐋 𝐃𝐎𝐍𝐄 Reaction khud de doge ya kahna padega ✅🔸")
+    # ── All Done + Grand Total Time (cinderella) ──────────────────────────────
+    _grand = _bt_cin.total_elapsed()
+    await m.reply_text(
+        f"𝐀𝐋𝐋 𝐃𝐎𝐍𝐄 Reaction khud de doge ya kahna padega ✅🔸\n\n"
+        f"⏰ **Total Time Taken:** `{_grand}` (HH:MM:SS)"
+    )
+    # ─────────────────────────────────────────────────────────────────────────
 
 
 # ── /Ali command ───────────────────────────────────────────────────────────────
@@ -560,9 +574,17 @@ async def ali_handler(bot: Client, m: Message):
     else:
         thumb == "no"
 
-    count = int(raw_text)    
+    count = int(raw_text)
+    # ── Batch timer shuru karo (Boy) ──────────────────────────────────────────
+    _total_links_boy = len(links) - (arg - 1)
+    _bt_boy = BatchTimer(total_links=max(_total_links_boy, 1))
+    # ─────────────────────────────────────────────────────────────────────────
     try:
         for i in range(arg-1, len(links)):
+
+            # ── Is file ka timer shuru ────────────────────────────────────────
+            _bt_boy.start_item()
+            # ─────────────────────────────────────────────────────────────────
 
             Vxy = links[i][1].replace("file/d/","uc?export=download&id=").replace("www.youtube-nocookie.com/embed", "youtu.be").replace("?modestbranding=1", "").replace("/view?usp=sharing","")
             url = "https://" + Vxy
@@ -633,7 +655,11 @@ async def ali_handler(bot: Client, m: Message):
                 if "drive" in url:
                     try:
                         ka = await helper.download(url, name)
-                        copy = await bot.send_document(chat_id=m.chat.id,document=ka, caption=cc1)
+                        # ── Drive file timing ─────────────────────────────────
+                        _item_t, _eta_t, _total_t = _bt_boy.finish_item()
+                        _tc = f"\n\n⏱️ **Time Taken:** `{_item_t}`\n🕐 **ETA (Remaining):** `{_eta_t}`\n⏳ **Total Elapsed:** `{_total_t}`"
+                        copy = await bot.send_document(chat_id=m.chat.id, document=ka, caption=cc1 + _tc)
+                        # ─────────────────────────────────────────────────────
                         count+=1
                         os.remove(ka)
                         time.sleep(1)
@@ -654,7 +680,11 @@ async def ali_handler(bot: Client, m: Message):
                                 file.write(response.content)
 
                             await asyncio.sleep(4)
-                            copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1)
+                            # ── PDF timing ────────────────────────────────────
+                            _item_t, _eta_t, _total_t = _bt_boy.finish_item()
+                            _tc = f"\n\n⏱️ **Time Taken:** `{_item_t}`\n🕐 **ETA (Remaining):** `{_eta_t}`\n⏳ **Total Elapsed:** `{_total_t}`"
+                            copy = await bot.send_document(chat_id=m.chat.id, document=f'{name}.pdf', caption=cc1 + _tc)
+                            # ─────────────────────────────────────────────────
                             count += 1
                             os.remove(f'{name}.pdf')
                         else:
@@ -671,7 +701,11 @@ async def ali_handler(bot: Client, m: Message):
                     res_file = await helper.download_video(url, cmd, name)
                     filename = res_file
                     await prog.delete(True)
-                    await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    # ── Video timing — caption me add karo ───────────────────
+                    _item_t, _eta_t, _total_t = _bt_boy.finish_item()
+                    _tc = f"\n\n⏱️ **Time Taken:** `{_item_t}`\n🕐 **ETA (Remaining):** `{_eta_t}`\n⏳ **Total Elapsed:** `{_total_t}`"
+                    await helper.send_vid(bot, m, cc + _tc, filename, thumb, name, prog)
+                    # ─────────────────────────────────────────────────────────
                     count += 1
                     time.sleep(1)
 
@@ -683,7 +717,13 @@ async def ali_handler(bot: Client, m: Message):
 
     except Exception as e:
         await m.reply_text(e)
-    await m.reply_text("𝐀𝐋𝐋 𝐃𝐎𝐍𝐄 REACTIONS khud doge ya kahna padega .✅🔸")
+    # ── All Done + Grand Total Time (Boy) ─────────────────────────────────────
+    _grand = _bt_boy.total_elapsed()
+    await m.reply_text(
+        f"𝐀𝐋𝐋 𝐃𝐎𝐍𝐄 REACTIONS khud doge ya kahna padega .✅🔸\n\n"
+        f"⏰ **Total Time Taken:** `{_grand}` (HH:MM:SS)"
+    )
+    # ─────────────────────────────────────────────────────────────────────────
 
 
 # ── /changeapi command (owner only) ───────────────────────────────────────────
