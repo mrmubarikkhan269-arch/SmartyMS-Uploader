@@ -422,28 +422,26 @@ async def txt_handler(bot: Client, m: Message):
             try:  
                 
                 cc = (
-                    f'**📹 VID_ID: {str(count).zfill(3)}.**\n\n'
+                    f'**📹 VID_ID: {str(count).zfill(3)}.\n\n'
                     f'📝 Title: {name1} {res}.mkv\n\n'
                     f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
-                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
-                    '❖  Extracted By  ❖\n'
-                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
-                    '┏━━━°❀•°━━━┓\n'
+                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
+                    f'✦  Extracted By  ✦\n'
+                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
+                    f'┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    '         ┗━━━°❀•°━━━┛\n\n'
-                    '꧁❀𓆩𝗧𝗼𝘅𝗶𝙘𓆪─‌⃛‌⃝🦅꧂'
+                    f'         ┗━━━°❀•°━━━┛**'
                 )
                 cc1 = (
-                    f'**💾 PDF_ID: {str(count).zfill(3)}.**\n\n'
+                    f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n'
                     f'📝 Title: {name1} .pdf\n\n'
                     f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
-                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
-                    '❖  Extracted By  ❖\n'
-                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
-                    '┏━━━°❀•°━━━┓\n'
+                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
+                    f'✦  Extracted By  ✦\n'
+                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
+                    f'┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    '         ┗━━━°❀•°━━━┛\n\n'
-                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
+                    f'         ┗━━━°❀•°━━━┛**'
                 )
                     
                 
@@ -728,30 +726,28 @@ async def ali_handler(bot: Client, m: Message):
                 cmd = f'yt-dlp -f "{ytf}" "{url}" -o "{name}.mp4"'
 
             try:  
-        
+                
                 cc = (
-                    f'**📹 VID_ID: {str(count).zfill(3)}.**\n\n'
+                    f'**📹 VID_ID: {str(count).zfill(3)}.\n\n'
                     f'📝 Title: {name1} {res}.mkv\n\n'
                     f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
-                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
-                    '❖  Extracted By  ❖\n'
-                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
-                    '┏━━━°❀•°━━━┓\n'
+                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
+                    f'✦  Extracted By  ✦\n'
+                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
+                    f'┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    '         ┗━━━°❀•°━━━┛\n\n'
-                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
+                    f'         ┗━━━°❀•°━━━┛**'
                 )
                 cc1 = (
-                    f'**💾 PDF_ID: {str(count).zfill(3)}.**\n\n'
+                    f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n'
                     f'📝 Title: {name1} .pdf\n\n'
                     f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
-                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
-                    '❖  Extracted By  ❖\n'
-                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
-                    '┏━━━°❀•°━━━┓\n'
+                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
+                    f'✦  Extracted By  ✦\n'
+                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
+                    f'┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    '         ┗━━━°❀•°━━━┛\n\n'
-                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
+                    f'         ┗━━━°❀•°━━━┛**'
                 )
                     
                 
