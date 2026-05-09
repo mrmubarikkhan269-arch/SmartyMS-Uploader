@@ -13,6 +13,7 @@ import yt_dlp
 import cloudscraper
 import m3u8
 import core as helper
+from live_timer import live_download_timer
 from utils import progress_bar
 from vars import API_ID, API_HASH, BOT_TOKEN, OWNER
 from aiohttp import ClientSession
@@ -393,8 +394,10 @@ async def txt_handler(bot: Client, m: Message):
              #id =  url.split("/")[-2]
              #url = f"{PWAPI1}?url={url}?token={raw_text4}"
             #url = f"https://madxapi-d0cbf6ac738c.herokuapp.com/{id}/master.m3u8?token={raw_text4}"
-            elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url:
-             url = f"{PWAPI2}?url={url}&token={raw_text4}"
+            elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url or "/master.mpd" in url:
+                # Clean any extra query params appended after master.mpd (e.g. &parentId=...)
+                _mpd_base = url.split("&parentId")[0].split("&childId")[0].split("&videoId")[0]
+                url = f"{PWAPI2}?url={_mpd_base}&token={raw_text4}"
                      
                                                          
             name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
@@ -492,71 +495,34 @@ async def txt_handler(bot: Client, m: Message):
                         f"⏱️ **Downloading...** `0s`"
                     )
                     prog = await m.reply_text(_dl_show)
-                    _dl_stop_ev = threading.Event()
-                    _dl_t0 = time.time()
-                    _loop_ref = asyncio.get_event_loop()
-
-                    def _cin_dl_updater():
-                        while not _dl_stop_ev.is_set():
-                            _dl_stop_ev.wait(3)
-                            if _dl_stop_ev.is_set():
-                                break
-                            _el = int(time.time() - _dl_t0)
-                            _ls = _fmt_elapsed(_el)
-                            try:
-                                import asyncio as _aio
-                                _aio.run_coroutine_threadsafe(
-                                    prog.edit(
-                                        f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n"
-                                        f"📝 Title:- `{name}`\n\n"
-                                        f"📹 𝐐𝐮𝐥𝐢𝐭𝐲 » `{raw_text2}`\n\n"
-                                        f"**🔗 𝐔𝐑𝐋 »** `{url}`\n\n"
-                                        f"**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786 ❖**\n\n"
-                                        f"⏱️ **Downloading...** `{_ls}`"
-                                    ),
-                                    _loop_ref
-                                )
-                            except Exception:
-                                pass
-
-                    _cin_dl_thread = threading.Thread(target=_cin_dl_updater, daemon=True)
-                    _cin_dl_thread.start()
+                    _dl_stop_ev = asyncio.Event()
+                    _cin_timer_task = asyncio.create_task(
+                        live_download_timer(prog, _dl_show, _dl_stop_ev)
+                    )
                     res_file = await helper.download_video(url, cmd, name)
                     _dl_stop_ev.set()
-                    _cin_dl_thread.join(timeout=2)
+                    try:
+                        await asyncio.wait_for(_cin_timer_task, timeout=2)
+                    except Exception:
+                        pass
                     filename = res_file
                     await prog.delete(True)
 
                     # ── Upload with live timer ──────────────────────────────
-                    _up_stop_ev = threading.Event()
-                    _up_t0 = time.time()
                     _up_prog = await m.reply_text(
                         f"📤 **Uploading...** `0s`\n\n📝 `{name}`"
                     )
-
-                    def _cin_up_updater():
-                        while not _up_stop_ev.is_set():
-                            _up_stop_ev.wait(3)
-                            if _up_stop_ev.is_set():
-                                break
-                            _el = int(time.time() - _up_t0)
-                            _ls = _fmt_elapsed(_el)
-                            try:
-                                import asyncio as _aio
-                                _aio.run_coroutine_threadsafe(
-                                    _up_prog.edit(
-                                        f"📤 **Uploading...** `{_ls}`\n\n📝 `{name}`"
-                                    ),
-                                    _loop_ref
-                                )
-                            except Exception:
-                                pass
-
-                    _cin_up_thread = threading.Thread(target=_cin_up_updater, daemon=True)
-                    _cin_up_thread.start()
+                    _up_stop_ev = asyncio.Event()
+                    _up_base = f"📤 **Uploading...**\n\n📝 `{name}`"
+                    _cin_up_task = asyncio.create_task(
+                        live_download_timer(_up_prog, _up_base, _up_stop_ev)
+                    )
                     await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
                     _up_stop_ev.set()
-                    _cin_up_thread.join(timeout=2)
+                    try:
+                        await asyncio.wait_for(_cin_up_task, timeout=2)
+                    except Exception:
+                        pass
                     await _up_prog.delete(True)
                     count += 1
                     time.sleep(1)
@@ -701,9 +667,10 @@ async def ali_handler(bot: Client, m: Message):
                     x = url.replace(x, "")
                     url = ((m3u8.loads(requests.get(url).text)).data['playlists'][1]['uri']).replace(q+"/", x)
                     
-            elif '/master.mpd' in url:
-             vid_id =  url.split("/")[-2]
-             url =  f"https://pw-url-api-v1mf.onrender.com/process?v=https://sec1.pw.live/{vid_id}/master.mpd&quality={raw_text2}"
+            elif "d1d34p8vz63oiq" in url or "sec1.pw.live" in url or "/master.mpd" in url:
+                # Clean any extra query params appended after master.mpd (e.g. &parentId=...)
+                _mpd_base = url.split("&parentId")[0].split("&childId")[0].split("&videoId")[0]
+                url = f"{PWAPI1}?url={_mpd_base}&token={MR}"
 
             name1 = links[i][0].replace("\t", "").replace(":", "").replace("/", "").replace("+", "").replace("#", "").replace("|", "").replace("@", "").replace("*", "").replace(".", "").replace("https", "").replace("http", "").strip()
             name = f'{str(count).zfill(3)}) {name1[:60]} {my_name}'
@@ -798,71 +765,34 @@ async def ali_handler(bot: Client, m: Message):
                         f"⏱️ **Downloading...** `0s`"
                     )
                     prog = await m.reply_text(_dl_show_b)
-                    _dl_stop_b = threading.Event()
-                    _dl_t0_b = time.time()
-                    _loop_ref_b = asyncio.get_event_loop()
-
-                    def _boy_dl_updater():
-                        while not _dl_stop_b.is_set():
-                            _dl_stop_b.wait(3)
-                            if _dl_stop_b.is_set():
-                                break
-                            _el = int(time.time() - _dl_t0_b)
-                            _ls = _fmt_elapsed(_el)
-                            try:
-                                import asyncio as _aio
-                                _aio.run_coroutine_threadsafe(
-                                    prog.edit(
-                                        f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n"
-                                        f"📝 Title:- `{name}`\n\n"
-                                        f"🖥️ 𝐐𝐮𝐥𝐢𝐭𝐲 » `{raw_text2}`\n\n"
-                                        f"**🔗 𝐔𝐑𝐋 »** `{url}`\n\n"
-                                        f"**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786✰**\n\n"
-                                        f"⏱️ **Downloading...** `{_ls}`"
-                                    ),
-                                    _loop_ref_b
-                                )
-                            except Exception:
-                                pass
-
-                    _boy_dl_thread = threading.Thread(target=_boy_dl_updater, daemon=True)
-                    _boy_dl_thread.start()
+                    _dl_stop_b = asyncio.Event()
+                    _boy_timer_task = asyncio.create_task(
+                        live_download_timer(prog, _dl_show_b, _dl_stop_b)
+                    )
                     res_file = await helper.download_video(url, cmd, name)
                     _dl_stop_b.set()
-                    _boy_dl_thread.join(timeout=2)
+                    try:
+                        await asyncio.wait_for(_boy_timer_task, timeout=2)
+                    except Exception:
+                        pass
                     filename = res_file
                     await prog.delete(True)
 
                     # ── Upload with live timer ──────────────────────────────
-                    _up_stop_b = threading.Event()
-                    _up_t0_b = time.time()
                     _up_prog_b = await m.reply_text(
                         f"📤 **Uploading...** `0s`\n\n📝 `{name}`"
                     )
-
-                    def _boy_up_updater():
-                        while not _up_stop_b.is_set():
-                            _up_stop_b.wait(3)
-                            if _up_stop_b.is_set():
-                                break
-                            _el = int(time.time() - _up_t0_b)
-                            _ls = _fmt_elapsed(_el)
-                            try:
-                                import asyncio as _aio
-                                _aio.run_coroutine_threadsafe(
-                                    _up_prog_b.edit(
-                                        f"📤 **Uploading...** `{_ls}`\n\n📝 `{name}`"
-                                    ),
-                                    _loop_ref_b
-                                )
-                            except Exception:
-                                pass
-
-                    _boy_up_thread = threading.Thread(target=_boy_up_updater, daemon=True)
-                    _boy_up_thread.start()
+                    _up_stop_b = asyncio.Event()
+                    _up_base_b = f"📤 **Uploading...**\n\n📝 `{name}`"
+                    _boy_up_task = asyncio.create_task(
+                        live_download_timer(_up_prog_b, _up_base_b, _up_stop_b)
+                    )
                     await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
                     _up_stop_b.set()
-                    _boy_up_thread.join(timeout=2)
+                    try:
+                        await asyncio.wait_for(_boy_up_task, timeout=2)
+                    except Exception:
+                        pass
                     await _up_prog_b.delete(True)
                     count += 1
                     time.sleep(1)
