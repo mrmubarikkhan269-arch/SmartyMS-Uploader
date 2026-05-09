@@ -137,7 +137,7 @@ async def main():
         
 class Data:
     START = (
-        "🌟 Welcome Welcome 😋 {0}! 🌟\n\n"
+        "🌟 Welcome Welcome🙈 {0}! 🌟\n\n"
     )
 
 
