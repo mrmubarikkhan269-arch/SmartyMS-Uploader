@@ -5,6 +5,7 @@ import json
 import time
 import random
 import asyncio
+import threading
 import requests
 import subprocess
 import urllib.parse
@@ -49,6 +50,22 @@ class db:
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Inline keyboard for start command
+
+# ── Live timer helper (threading-based, works with blocking subprocess) ───────
+def _fmt_elapsed(seconds: int) -> str:
+    """Format elapsed seconds: 45 → '45s', 125 → '2m 05s', 3723 → '1h 02m 03s'"""
+    if seconds < 0:
+        seconds = 0
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    s = seconds % 60
+    if h > 0:
+        return f"{h}h {m:02d}m {s:02d}s"
+    elif m > 0:
+        return f"{m}m {s:02d}s"
+    else:
+        return f"{s}s"
+# ─────────────────────────────────────────────────────────────────────────────
 BUTTONSCONTACT = InlineKeyboardMarkup([[InlineKeyboardButton(text="🔎Developer", url="https://t.me/SmartBoy_ApnaMS")]])
 keyboard = InlineKeyboardMarkup(
     [
@@ -119,7 +136,7 @@ async def main():
         
 class Data:
     START = (
-        "🌟 Welcome Dear😚 {0}! 🌟\n\n"
+        "🌟 Welcome Dear🤝 {0}! 🌟\n\n"
     )
 
 
@@ -311,11 +328,11 @@ async def txt_handler(bot: Client, m: Message):
     except Exception:
             res = "UN"
     
-    await editable.edit("**Enter Your Name or send '/Vip' for use default.🌚\n Eg :@Lapata_786 **")
+    await editable.edit("**Enter Your Name or send '/Mahi' for use default.🌚\n Eg :@Lapata_786 **")
     input3: Message = await bot.listen(editable.chat.id)
     raw_text3 = input3.text
     await input3.delete(True)
-    if raw_text3 == '/Vip':
+    if raw_text3 == '/Mahi':
         CR = credit
     else:
         CR = raw_text3
@@ -343,6 +360,7 @@ async def txt_handler(bot: Client, m: Message):
         thumb == "no"
 
     count = int(raw_text)    
+    _cin_batch_start = time.time()  # batch timer start
     try:
         for i in range(arg-1, len(links)):
 
@@ -404,26 +422,28 @@ async def txt_handler(bot: Client, m: Message):
             try:  
                 
                 cc = (
-                    f'**📹 VID_ID: {str(count).zfill(3)}.\n\n'
+                    f'**📹 VID_ID: {str(count).zfill(3)}.**\n\n'
                     f'📝 Title: {name1} {res}.mkv\n\n'
                     f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
-                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
-                    f'✦  Extracted By  ✦\n'
-                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
-                    f'┏━━━°❀•°━━━┓\n'
+                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
+                    '❖  Extracted By  ❖\n'
+                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
+                    '┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    f'         ┗━━━°❀•°━━━┛**'
+                    '         ┗━━━°❀•°━━━┛\n\n'
+                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
                 )
                 cc1 = (
-                    f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n'
+                    f'**💾 PDF_ID: {str(count).zfill(3)}.**\n\n'
                     f'📝 Title: {name1} .pdf\n\n'
                     f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
-                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
-                    f'✦  Extracted By  ✦\n'
-                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
-                    f'┏━━━°❀•°━━━┓\n'
+                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
+                    '❖  Extracted By  ❖\n'
+                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
+                    '┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    f'         ┗━━━°❀•°━━━┛**'
+                    '         ┗━━━°❀•°━━━┛\n\n'
+                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
                 )
                     
                 
@@ -463,14 +483,84 @@ async def txt_handler(bot: Client, m: Message):
                         continue
                           
                 else:
-                    Show = f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n📝 Title:- `{name}\n\n📹 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`\n\n**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786 ❖"
-                    prog = await m.reply_text(Show)
+                    _dl_show = (
+                        f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n"
+                        f"📝 Title:- `{name}`\n\n"
+                        f"📹 𝐐𝐮𝐥𝐢𝐭𝐲 » `{raw_text2}`\n\n"
+                        f"**🔗 𝐔𝐑𝐋 »** `{url}`\n\n"
+                        f"**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786 ❖**\n\n"
+                        f"⏱️ **Downloading...** `0s`"
+                    )
+                    prog = await m.reply_text(_dl_show)
+                    _dl_stop_ev = threading.Event()
+                    _dl_t0 = time.time()
+                    _loop_ref = asyncio.get_event_loop()
+
+                    def _cin_dl_updater():
+                        while not _dl_stop_ev.is_set():
+                            _dl_stop_ev.wait(3)
+                            if _dl_stop_ev.is_set():
+                                break
+                            _el = int(time.time() - _dl_t0)
+                            _ls = _fmt_elapsed(_el)
+                            try:
+                                import asyncio as _aio
+                                _aio.run_coroutine_threadsafe(
+                                    prog.edit(
+                                        f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n"
+                                        f"📝 Title:- `{name}`\n\n"
+                                        f"📹 𝐐𝐮𝐥𝐢𝐭𝐲 » `{raw_text2}`\n\n"
+                                        f"**🔗 𝐔𝐑𝐋 »** `{url}`\n\n"
+                                        f"**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786 ❖**\n\n"
+                                        f"⏱️ **Downloading...** `{_ls}`"
+                                    ),
+                                    _loop_ref
+                                )
+                            except Exception:
+                                pass
+
+                    _cin_dl_thread = threading.Thread(target=_cin_dl_updater, daemon=True)
+                    _cin_dl_thread.start()
                     res_file = await helper.download_video(url, cmd, name)
+                    _dl_stop_ev.set()
+                    _cin_dl_thread.join(timeout=2)
                     filename = res_file
                     await prog.delete(True)
+
+                    # ── Upload with live timer ──────────────────────────────
+                    _up_stop_ev = threading.Event()
+                    _up_t0 = time.time()
+                    _up_prog = await m.reply_text(
+                        f"📤 **Uploading...** `0s`\n\n📝 `{name}`"
+                    )
+
+                    def _cin_up_updater():
+                        while not _up_stop_ev.is_set():
+                            _up_stop_ev.wait(3)
+                            if _up_stop_ev.is_set():
+                                break
+                            _el = int(time.time() - _up_t0)
+                            _ls = _fmt_elapsed(_el)
+                            try:
+                                import asyncio as _aio
+                                _aio.run_coroutine_threadsafe(
+                                    _up_prog.edit(
+                                        f"📤 **Uploading...** `{_ls}`\n\n📝 `{name}`"
+                                    ),
+                                    _loop_ref
+                                )
+                            except Exception:
+                                pass
+
+                    _cin_up_thread = threading.Thread(target=_cin_up_updater, daemon=True)
+                    _cin_up_thread.start()
                     await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    _up_stop_ev.set()
+                    _cin_up_thread.join(timeout=2)
+                    await _up_prog.delete(True)
                     count += 1
                     time.sleep(1)
+
 
             except Exception as e:
                 await m.reply_text(
@@ -480,7 +570,12 @@ async def txt_handler(bot: Client, m: Message):
 
     except Exception as e:
         await m.reply_text(e)
-    await m.reply_text("𝐀𝐋𝐋 𝐃𝐎𝐍𝐄 Reaction khud de doge ya kahna padega ✅🔸")
+    _cin_total_time = _fmt_elapsed(int(time.time() - _cin_batch_start))
+    await m.reply_text(
+        f"🏁 **𝐀𝐋𝐋 𝐃𝐎𝐍𝐄** ✅\n\n"
+        f"⏱️ **Total Time:** `{_cin_total_time}`\n\n"
+        "Reaction khud de doge ya kahna padega 🔥🔸"
+    )
 
 
 # ── /Ali command ───────────────────────────────────────────────────────────────
@@ -568,6 +663,7 @@ async def ali_handler(bot: Client, m: Message):
         thumb == "no"
 
     count = int(raw_text)    
+    _boy_batch_start = time.time()  # batch timer start
     try:
         for i in range(arg-1, len(links)):
 
@@ -634,26 +730,28 @@ async def ali_handler(bot: Client, m: Message):
             try:  
         
                 cc = (
-                    f'**📹 VID_ID: {str(count).zfill(3)}.\n\n'
-                    f'📝 Title: {name1} STUDENTS💛{res}.mkv\n\n'
-                    f'📚 Batch Name: {b_name}\n\n'
-                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
-                    f'✦  Extracted By  ✦\n'
-                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
-                    f'┏━━━°❀•°━━━┓\n'
+                    f'**📹 VID_ID: {str(count).zfill(3)}.**\n\n'
+                    f'📝 Title: {name1} {res}.mkv\n\n'
+                    f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
+                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
+                    '❖  Extracted By  ❖\n'
+                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
+                    '┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    f'         ┗━━━°❀•°━━━┛**'
+                    '         ┗━━━°❀•°━━━┛\n\n'
+                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
                 )
                 cc1 = (
-                    f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n'
-                    f'📝 Title: {name1} STUDENTS💛.pdf\n\n'
-                    f'📚 Batch Name: {b_name}\n\n'
-                    f'╔══❖•ೋ° °ೋ•❖══╗\n'
-                    f'✦  Extracted By  ✦\n'
-                    f'╚══❖•ೋ° °ೋ•❖══╝\n\n'
-                    f'┏━━━°❀•°━━━┓\n'
+                    f'**💾 PDF_ID: {str(count).zfill(3)}.**\n\n'
+                    f'📝 Title: {name1} .pdf\n\n'
+                    f'<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n'
+                    '╔══❖•ୋୋ° °ୋୋ•❖══╗\n'
+                    '❖  Extracted By  ❖\n'
+                    '╚══❖•ୋୋ° °ୋୋ•❖══╝\n\n'
+                    '┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
-                    f'         ┗━━━°❀•°━━━┛**'
+                    '         ┗━━━°❀•°━━━┛\n\n'
+                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
                 )
                     
                 
@@ -693,14 +791,84 @@ async def ali_handler(bot: Client, m: Message):
                         continue
                           
                 else:
-                    Show = f"✰🖥️𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀»\n\n📝 Title:- `{name}\n\n🖥️ 𝐐𝐮𝐥𝐢𝐭𝐲 » {raw_text2}`\n\n**🔗 𝐔𝐑𝐋 »** `{url}`\n\n**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786✰"
-                    prog = await m.reply_text(Show)
+                    _dl_show_b = (
+                        f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n"
+                        f"📝 Title:- `{name}`\n\n"
+                        f"🖥️ 𝐐𝐮𝐥𝐢𝐭𝐲 » `{raw_text2}`\n\n"
+                        f"**🔗 𝐔𝐑𝐋 »** `{url}`\n\n"
+                        f"**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786✰**\n\n"
+                        f"⏱️ **Downloading...** `0s`"
+                    )
+                    prog = await m.reply_text(_dl_show_b)
+                    _dl_stop_b = threading.Event()
+                    _dl_t0_b = time.time()
+                    _loop_ref_b = asyncio.get_event_loop()
+
+                    def _boy_dl_updater():
+                        while not _dl_stop_b.is_set():
+                            _dl_stop_b.wait(3)
+                            if _dl_stop_b.is_set():
+                                break
+                            _el = int(time.time() - _dl_t0_b)
+                            _ls = _fmt_elapsed(_el)
+                            try:
+                                import asyncio as _aio
+                                _aio.run_coroutine_threadsafe(
+                                    prog.edit(
+                                        f"✰🖥️ 𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝗪𝗮𝗶𝘁..🤖🚀 »\n\n"
+                                        f"📝 Title:- `{name}`\n\n"
+                                        f"🖥️ 𝐐𝐮𝐥𝐢𝐭𝐲 » `{raw_text2}`\n\n"
+                                        f"**🔗 𝐔𝐑𝐋 »** `{url}`\n\n"
+                                        f"**𝐁𝐨𝐭 𝐌𝐚𝐝𝐞 𝐁𝐲🧸: ✦ @Lapata_786✰**\n\n"
+                                        f"⏱️ **Downloading...** `{_ls}`"
+                                    ),
+                                    _loop_ref_b
+                                )
+                            except Exception:
+                                pass
+
+                    _boy_dl_thread = threading.Thread(target=_boy_dl_updater, daemon=True)
+                    _boy_dl_thread.start()
                     res_file = await helper.download_video(url, cmd, name)
+                    _dl_stop_b.set()
+                    _boy_dl_thread.join(timeout=2)
                     filename = res_file
                     await prog.delete(True)
+
+                    # ── Upload with live timer ──────────────────────────────
+                    _up_stop_b = threading.Event()
+                    _up_t0_b = time.time()
+                    _up_prog_b = await m.reply_text(
+                        f"📤 **Uploading...** `0s`\n\n📝 `{name}`"
+                    )
+
+                    def _boy_up_updater():
+                        while not _up_stop_b.is_set():
+                            _up_stop_b.wait(3)
+                            if _up_stop_b.is_set():
+                                break
+                            _el = int(time.time() - _up_t0_b)
+                            _ls = _fmt_elapsed(_el)
+                            try:
+                                import asyncio as _aio
+                                _aio.run_coroutine_threadsafe(
+                                    _up_prog_b.edit(
+                                        f"📤 **Uploading...** `{_ls}`\n\n📝 `{name}`"
+                                    ),
+                                    _loop_ref_b
+                                )
+                            except Exception:
+                                pass
+
+                    _boy_up_thread = threading.Thread(target=_boy_up_updater, daemon=True)
+                    _boy_up_thread.start()
                     await helper.send_vid(bot, m, cc, filename, thumb, name, prog)
+                    _up_stop_b.set()
+                    _boy_up_thread.join(timeout=2)
+                    await _up_prog_b.delete(True)
                     count += 1
                     time.sleep(1)
+
 
             except Exception as e:
                 await m.reply_text(
@@ -710,7 +878,12 @@ async def ali_handler(bot: Client, m: Message):
 
     except Exception as e:
         await m.reply_text(e)
-    await m.reply_text("𝐀𝐋𝐋 𝐃𝐎𝐍𝐄 REACTIONS khud doge ya kahna padega .✅🔸")
+    _boy_total_time = _fmt_elapsed(int(time.time() - _boy_batch_start))
+    await m.reply_text(
+        f"🏁 **𝐀𝐋𝐋 𝐃𝐎𝐍𝐄** ✅\n\n"
+        f"⏱️ **Total Time:** `{_boy_total_time}`\n\n"
+        "REACTIONS khud doge ya kahna padega 🔥🔸"
+    )
 
 
 # ── /changeapi command (owner only) ───────────────────────────────────────────
