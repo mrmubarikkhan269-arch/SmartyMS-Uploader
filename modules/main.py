@@ -74,7 +74,7 @@ keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(text="👑 Owner", url="https://t.me/MR_Toxic_1"),
         ],
         [
-            InlineKeyboardButton(text="🔎 Developer", url="https://t.me/SmartBoy_ApnaMS"),
+            InlineKeyboardButton(text="🔎 Developer Bro", url="https://t.me/SmartBoy_ApnaMS"),
         ],
     ]
 )
@@ -136,7 +136,7 @@ async def main():
         
 class Data:
     START = (
-        "🌟 Welcome Dear🤝 {0}! 🌟\n\n"
+        "🌟 Welcome Dear😚 {0}! 🌟\n\n"
     )
 
 
@@ -337,11 +337,11 @@ async def txt_handler(bot: Client, m: Message):
     else:
         CR = raw_text3
         
-    await editable.edit("**Enter Your PW Token For 𝐌𝐏𝐃 𝐔𝐑𝐋  or send '/Mahi' for use default🎀**")
+    await editable.edit("**Enter Your PW Token For 𝐌𝐏𝐃 𝐔𝐑𝐋  or send '/Vip' for use default🎀**")
     input4: Message = await bot.listen(editable.chat.id)
     raw_text4 = input4.text
     await input4.delete(True)
-    if raw_text4 == '/Mahi':
+    if raw_text4 == '/Vip':
         MR = token
     else:
         MR = raw_text4
@@ -431,7 +431,7 @@ async def txt_handler(bot: Client, m: Message):
                     '┏━━━°❀•°━━━┓\n'
                     f'         ┃   ● ➠: {CR}\n'
                     '         ┗━━━°❀•°━━━┛\n\n'
-                    '⦑♥🦅⦒─🧿🦅⋆ Mahi ⋆🦅🧿─⦒♥⦑'
+                    '꧁❀𓆩𝗧𝗼𝘅𝗶𝙘𓆪─‌⃛‌⃝🦅꧂'
                 )
                 cc1 = (
                     f'**💾 PDF_ID: {str(count).zfill(3)}.**\n\n'
