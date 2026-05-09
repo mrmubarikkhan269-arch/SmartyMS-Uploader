@@ -215,7 +215,7 @@ async def main():
         
 class Data:
     START = (
-        "🌟 Welcome Dear🤝 {0}! 🌟\n\n"
+        "🌟 Welcome Dear😚 {0}! 🌟\n\n"
     )
 
 
@@ -416,11 +416,11 @@ async def txt_handler(bot: Client, m: Message):
     else:
         CR = raw_text3
         
-    await editable.edit("**Enter Your PW Token For 𝐌𝐏𝐃 𝐔𝐑𝐋  or send '/Mahi' for use default🎀**")
+    await editable.edit("**Enter Your PW Token For 𝐌𝐏𝐃 𝐔𝐑𝐋  or send '/Vip' for use default🎀**")
     input4: Message = await bot.listen(editable.chat.id)
     raw_text4 = input4.text
     await input4.delete(True)
-    if raw_text4 == '/Mahi':
+    if raw_text4 == '/Vip':
         MR = token
     else:
         MR = raw_text4
@@ -501,8 +501,18 @@ async def txt_handler(bot: Client, m: Message):
 
             try:  
                 
-                cc = f'**📹 VID_ID: {str(count).zfill(3)}.\n\n📝 Title: {name1} {res}.mkv\n\n<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n📥 Extracted By♠ : {CR}\n\n**∘₊❀━━━𓆩Mคɦɨ𓆪━━━❀₊∘**'
-                cc1 = f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n📝 Title: {name1} .pdf\n\n<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n📥 Extracted By♠ : {CR}\n\n**∘₊❀━━━𓆩Mคɦɨ𓆪━━━❀₊∘**'
+                cc = f'**📹 VID_ID: {str(count).zfill(3)}.\n\n📝 Title: {name1} {res}.mkv\n\n<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n╔══❖•ೋ° °ೋ•❖══╗\n"
+"║      ✦ Extracted By ✦      ║\n"
+"╚══❖•ೋ° °ೋ•❖══╝\n\n"
+"┏━━━°❀•°━━━┓\n"
+"┃   ● ➠: {CR}   ┃\n"
+"┗━━━°❀•°━━━┛"\n\n**∘₊❀━━━𓆩Mคɦɨ𓆪━━━❀₊∘**'
+                cc1 = f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n📝 Title: {name1} .pdf\n\n<pre><code>📚 Batch Name: {b_name}</code></pre>\n\n╔══❖•ೋ° °ೋ•❖══╗\n"
+"║      ✦ Extracted By ✦      ║\n"
+"╚══❖•ೋ° °ೋ•❖══╝\n\n"
+"┏━━━°❀•°━━━┓\n"
+"┃   ● ➠: {CR}   ┃\n"
+"┗━━━°❀•°━━━┛"\n\n**∘₊❀━━━𓆩Mคɦɨ𓆪━━━❀₊∘**'
                     
                 
                 if "drive" in url:
