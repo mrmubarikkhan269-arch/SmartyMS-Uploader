@@ -433,7 +433,7 @@ async def txt_handler(bot: Client, m: Message):
                     f'┏━━━°❀•°━━━┓\n'
                     f'┃ ● ➠:{CR}   \n'
                     f'┗━━━°❀•°━━━┛\n\n'
-                    f'**∘꧁❀𓆩𝗧𝗼𝘅𝗶𝙘𓆪🦅❀꧂∘**'
+                    f'**⚝──⭒─∘꧁❀𓆩𝗧𝗼𝘅𝗶𝙘𓆪🦅❀꧂∘─⭒──⚝**'
                 )
                 cc1 = (
                     f'**💾 PDF_ID: {str(count).zfill(3)}.\n\n'
@@ -445,7 +445,7 @@ async def txt_handler(bot: Client, m: Message):
                     f'┏━━━°❀•°━━━┓\n'
                     f'┃ ● ➠:{CR}.  \n'
                     f'┗━━━°❀•°━━━┛\n\n'
-                    f'**∘꧁❀𓆩𝗧𝗼𝘅𝗶𝙘𓆪🦅❀꧂∘**'
+                    f'**⚝──⭒─∘꧁❀𓆩𝗧𝗼𝘅𝗶𝙘𓆪🦅❀꧂∘─⭒──⚝**'
                 )
                     
                 
