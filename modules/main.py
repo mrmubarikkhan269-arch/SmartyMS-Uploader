@@ -119,7 +119,7 @@ async def main():
         
 class Data:
     START = (
-        "🌟 Welcome Dear🤝 {0}! 🌟\n\n"
+        "🌟 Welcome Dear😚 {0}! 🌟\n\n"
     )
 
 
@@ -311,11 +311,11 @@ async def txt_handler(bot: Client, m: Message):
     except Exception:
             res = "UN"
     
-    await editable.edit("**Enter Your Name or send '/Mahi' for use default.🌚\n Eg :@Lapata_786 **")
+    await editable.edit("**Enter Your Name or send '/Vip' for use default.🌚\n Eg :@Lapata_786 **")
     input3: Message = await bot.listen(editable.chat.id)
     raw_text3 = input3.text
     await input3.delete(True)
-    if raw_text3 == '/Mahi':
+    if raw_text3 == '/Vip':
         CR = credit
     else:
         CR = raw_text3
